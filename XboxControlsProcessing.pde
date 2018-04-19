@@ -9,7 +9,7 @@ ControlDevice gpad; // object for gamepad
 Serial myPort; // creates object for communicating between arduino and processing
 
 public void setup() {
-  //size(400,400); //idk what size does but i dont think it works without it
+  size(400,400); //idk what size does but i dont think it works without it
   // Initialise the ControlIO
   control = ControlIO.getInstance(this);
   // Find a device that matches the configuration file
