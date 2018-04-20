@@ -7,9 +7,10 @@ ControlIO control; // dont delete this
 Configuration config; //idk some default code dont delete 
 ControlDevice gpad; // object for gamepad
 Serial myPort; // creates object for communicating between arduino and processing
-
+int scale;
 public void setup() {
-  size(400, 400); //idk what size does but i dont think it works without it
+  scale = 63; // scale the power of the motors
+  size(200, 200); //idk what size does but i dont think it works without it its for the gui
   // Initialise the ControlIO
   control = ControlIO.getInstance(this);
   // Find a device that matches the configuration file
@@ -23,17 +24,16 @@ public void setup() {
 }
 
 public void draw() {
-  int xposleftstick = Math.round(400*(gpad.getSlider("XL").getValue())+1500);
-  int yposleftstick = Math.round(400*(gpad.getSlider("YL").getValue())+1500);
-  int xposrightstick = Math.round(400*(gpad.getSlider("XR").getValue())+1500);
-  int yposrightstick = Math.round(400*(gpad.getSlider("YR").getValue())+1500);
-  int righttrigger = Math.round(400*(gpad.getSlider("RT").getValue())+1500);
-  int lefttrigger = Math.round(400*(gpad.getSlider("LT").getValue())+1500);
-  int xButton = (gpad.getButton("XBUT").pressed() ? 1 : 0);
-  int yButton = (gpad.getButton("YBUT").pressed() ? 1 : 0);
+  byte xposleftstick = (byte) Math.round(scale*(gpad.getSlider("XL").getValue())+63);
+  byte yposleftstick = (byte) Math.round(scale*(gpad.getSlider("YL").getValue())+63);
+  byte xposrightstick = (byte) Math.round(scale*(gpad.getSlider("XR").getValue())+63);
+  byte yposrightstick = (byte) Math.round(scale*(gpad.getSlider("YR").getValue())+63);
+  byte righttrigger = (byte) Math.round(scale*(gpad.getSlider("RT").getValue())+63);
+  byte lefttrigger = (byte) Math.round(scale*(gpad.getSlider("LT").getValue())+63);
+  byte xButton = (byte) (gpad.getButton("XBUT").pressed() ? 1 : 0);
+  byte yButton = (byte) (gpad.getButton("YBUT").pressed() ? 1 : 0);
 
-
-  int out[] = new int[8];
+  byte out[] = new byte[8]; //output array should be right
   out[0] = xposleftstick; 
   out[1] = yposleftstick;
   out[2] = xposrightstick;
@@ -42,13 +42,11 @@ public void draw() {
   out[5] = lefttrigger;
   out[6] = xButton;
   out[7] = yButton; //i did this at night and i forgot about naming conventions sorry
-  println(out[6]);
-  String str = "";
+  //println(out[4]);
   for (int i = 0; i < out.length; i++) {
-    if (i > 0) {
-      str += ",";//We add a comma before each value, except the first value
-    }
-    str += out[i];//We concatenate each number in the string.
+    print(out[i] + ", ");
   }
-  myPort.write(str); //doesn't accept float arrays so I converted to string bamboozled the system
+  println("");
+  myPort.write(out); //doesn't accept float arrays so I converted to byte array bamboozled the system
+  delay(1000); //restrict outflow of data to prevent overclocking arduino and computer
 }
